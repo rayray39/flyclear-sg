@@ -1,0 +1,83 @@
+{
+  "_comment": [
+    "APPROXIMATE no-fly / permit-required areas in Singapore, bundled as a static file.",
+    "OneMap publishes no Drone Query REST API, so these shapes were traced from the",
+    "CAAS published no-fly-zone map and are deliberately coarse. They are good enough",
+    "for a pre-flight hint and NOT good enough to fly on. Always confirm against",
+    "https://www.onemap.gov.sg/droneQuery before operating.",
+    "",
+    "Two zone shapes are supported, both in plain WGS84 degrees:",
+    "  circle  -> { lat, lng, radiusM }           used for the 5 km aerodrome rings",
+    "  polygon -> [[lng, lat], ...] (GeoJSON order, ring must be closed)"
+  ],
+  "sourceUrl": "https://www.caas.gov.sg/public-passengers/unmanned-aircraft/permitted-flying-areas-and-no-fly-zones",
+  "tracedOn": "2026-10-02",
+  "zones": [
+    {
+      "id": "changi-airport",
+      "name": "Changi Airport",
+      "reason": "Within 5 km of an aerodrome — CAAS permit required",
+      "circle": { "lat": 1.3592, "lng": 103.9894, "radiusM": 5000 }
+    },
+    {
+      "id": "seletar-airport",
+      "name": "Seletar Airport",
+      "reason": "Within 5 km of an aerodrome — CAAS permit required",
+      "circle": { "lat": 1.4169, "lng": 103.8678, "radiusM": 5000 }
+    },
+    {
+      "id": "paya-lebar-airbase",
+      "name": "Paya Lebar Air Base",
+      "reason": "Within 5 km of an aerodrome — CAAS permit required",
+      "circle": { "lat": 1.3604, "lng": 103.9095, "radiusM": 5000 }
+    },
+    {
+      "id": "tengah-airbase",
+      "name": "Tengah Air Base",
+      "reason": "Within 5 km of an aerodrome — CAAS permit required",
+      "circle": { "lat": 1.3875, "lng": 103.7089, "radiusM": 5000 }
+    },
+    {
+      "id": "sembawang-airbase",
+      "name": "Sembawang Air Base",
+      "reason": "Within 5 km of an aerodrome — CAAS permit required",
+      "circle": { "lat": 1.4254, "lng": 103.8129, "radiusM": 5000 }
+    },
+    {
+      "id": "istana",
+      "name": "The Istana",
+      "reason": "Protected area — no flying",
+      "polygon": [
+        [103.8390, 1.3030],
+        [103.8475, 1.3030],
+        [103.8475, 1.3100],
+        [103.8390, 1.3100],
+        [103.8390, 1.3030]
+      ]
+    },
+    {
+      "id": "changi-prison",
+      "name": "Changi Prison Complex",
+      "reason": "Protected area — no flying",
+      "polygon": [
+        [103.9660, 1.3440],
+        [103.9760, 1.3440],
+        [103.9760, 1.3520],
+        [103.9660, 1.3520],
+        [103.9660, 1.3440]
+      ]
+    },
+    {
+      "id": "jurong-island",
+      "name": "Jurong Island",
+      "reason": "Protected area — no flying",
+      "polygon": [
+        [103.6500, 1.2450],
+        [103.7300, 1.2450],
+        [103.7300, 1.2900],
+        [103.6500, 1.2900],
+        [103.6500, 1.2450]
+      ]
+    }
+  ]
+}
