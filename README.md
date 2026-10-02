@@ -2,7 +2,9 @@
 
 Singapore drone pre-flight zone & lightning checker. Pick a point, pick a radius,
 press **Check** — the app reports restricted areas and recent NEA lightning
-observations inside that circle.
+observations inside that circle.  
+
+Visit the site here: https://rayray39.github.io/flyclear-sg/
 
 ```bash
 npm install
