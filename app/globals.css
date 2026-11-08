@@ -243,6 +243,31 @@ button[aria-pressed='true'] {
   margin: 0;
 }
 
+/* Wind readout: arrow points downwind, the text names where it blows from. */
+.wind-readout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.wind-arrow {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  color: var(--accent);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wind-figure {
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .zone-list {
   margin: 6px 0 0;
   padding-left: 18px;

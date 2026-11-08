@@ -189,6 +189,10 @@ export default function Page() {
           <p className="notice error">Lightning check failed: {result.lightningError}</p>
         )}
 
+        {result?.wind.error && (
+          <p className="notice error">Wind check failed: {result.wind.error}</p>
+        )}
+
         <footer className="disclaimer">
           <p>
             FlyClear SG is a pre-flight assistant, not a permission to fly. &ldquo;Nothing
@@ -209,7 +213,9 @@ export default function Page() {
             <a href="https://www.onemap.gov.sg/droneQuery" target="_blank" rel="noreferrer">
               OneMap Drone Query
             </a>
-            . Lightning data: NEA via data.gov.sg.
+            . Lightning and wind data: NEA via data.gov.sg. Wind is a 10-minute average
+            from the nearest reporting station, so it will not capture gusts or local
+            turbulence around buildings.
           </p>
         </footer>
       </aside>

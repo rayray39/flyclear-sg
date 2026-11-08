@@ -7,7 +7,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { distanceM, isPointInRing, doesCircleTouchRing } from '../lib/geo.ts';
-import { lightningMessage, verdict } from '../lib/guidance.ts';
+import { lightningMessage, verdict, windMessage } from '../lib/guidance.ts';
+import { compassPoint } from '../lib/wind.ts';
+import { takeApiCallSlots, resetRateLimit } from '../lib/rateLimit.ts';
 
 // A 0.01° × 0.01° square near Singapore's centre. 0.01° of latitude is ~1113 m.
 const SQUARE = [
@@ -47,13 +49,58 @@ test('lightning wording follows the 2 / 5 / 10 km ladder', () => {
   assert.doesNotMatch(lightningMessage(null), /safe/i);
 });
 
-test('verdict escalates on a containing zone or close lightning', () => {
+test('verdict escalates on a containing zone, close lightning or strong wind', () => {
   const overlapping = [{ containsCentre: false }];
   const containing = [{ containsCentre: true }];
 
-  assert.equal(verdict(null, []), 'nothing-detected');
-  assert.equal(verdict(null, overlapping), 'caution');
-  assert.equal(verdict(8000, []), 'caution');
-  assert.equal(verdict(3000, []), 'do-not-fly');
-  assert.equal(verdict(null, containing), 'do-not-fly');
+  assert.equal(verdict(null, [], null), 'nothing-detected');
+  assert.equal(verdict(null, [], 6), 'nothing-detected');
+  assert.equal(verdict(null, overlapping, null), 'caution');
+  assert.equal(verdict(8000, [], null), 'caution');
+  assert.equal(verdict(3000, [], null), 'do-not-fly');
+  assert.equal(verdict(null, containing, null), 'do-not-fly');
+
+  // Wind alone: Beaufort 5 cautions, Beaufort 6 stops the flight.
+  assert.equal(verdict(null, [], 12), 'nothing-detected');
+  assert.equal(verdict(null, [], 17), 'caution');
+  assert.equal(verdict(null, [], 22), 'do-not-fly');
+  // A failed wind check is unknown, not calm, so it escalates nothing.
+  assert.equal(verdict(null, [], null), 'nothing-detected');
+});
+
+test('wind wording follows the Beaufort ladder and never claims safety', () => {
+  assert.match(windMessage(25), /above the limit/);
+  assert.match(windMessage(18), /at the limit/);
+  assert.match(windMessage(13), /Moderate wind/);
+  assert.match(windMessage(4), /Light wind/);
+  assert.match(windMessage(null), /unknown/);
+  assert.doesNotMatch(windMessage(4), /safe/i);
+});
+
+test('compassPoint maps bearings to 16-point labels and wraps at north', () => {
+  assert.equal(compassPoint(0), 'N');
+  assert.equal(compassPoint(45), 'NE');
+  assert.equal(compassPoint(90), 'E');
+  assert.equal(compassPoint(180), 'S');
+  assert.equal(compassPoint(270), 'W');
+  // 349 and above rounds past NNW, back round to N.
+  assert.equal(compassPoint(350), 'N');
+  assert.equal(compassPoint(360), 'N');
+});
+
+test('rate limiter budgets API calls, not checks', () => {
+  resetRateLimit();
+  // 6 calls per window, 3 calls per check: two checks fit, the third does not.
+  assert.equal(takeApiCallSlots(3).allowed, true);
+  assert.equal(takeApiCallSlots(3).allowed, true);
+
+  const blocked = takeApiCallSlots(3);
+  assert.equal(blocked.allowed, false);
+  assert.ok(blocked.retryAfterSeconds > 0, 'a blocked check must say how long to wait');
+
+  // A partial reservation must not sneak past a full one.
+  assert.equal(takeApiCallSlots(1).allowed, false);
+
+  resetRateLimit();
+  assert.equal(takeApiCallSlots(3).allowed, true);
 });
